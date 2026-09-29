@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit & Review Store</title>
+    <!-- Google Fonts: Kanit -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- ========================================== -->
+    <!-- PART 1: STYLES (CSS)                        -->
+    <!-- ========================================== -->
+    <style>
+        :root {
+            --bg-color: #fce4ec;
+            --text-color: #4a4a4a;
+            --primary-color: #ff80ab;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Kanit', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 80px;
+            min-height: 100vh;
+        }
+
+        /* Top Bar & Role Switcher */
+        .top-nav {
+            display: flex;
+            justify-content: flex-end;
+            padding: 15px 10%;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .role-btn {
+            background: #fff;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 6px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .role-btn.active {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Store Header Section */
+        .store-header {
+            text-align: center;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .banner-img {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 15px;
+        }
+
+        .store-title {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .store-desc {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+
+        .drive-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 8px 18px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Actions Section */
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-add-review {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Review List & Cards */
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .review-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Avatar with first letter */
+        .avatar-initial {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .reviewer-info h4 {
+            font-size: 1rem;
+        }
+
+        .stars {
+            color: #ffca28;
+            font-size: 0.85rem;
+        }
+
+        .review-text {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: var(--text-color);
+        }
+
+        .review-date {
+            font-size: 0.75rem;
+            opacity: 0.5;
+            text-align: right;
+            margin-top: auto;
+        }
+
+        /* Modal / Popup */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 25px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.5;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        .form-submit-btn {
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        /* Admin Dashboard Section */
+        .admin-panel {
+            display: none;
+            background: #fff;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border: 2px dashed var(--primary-color);
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .color-inputs {
+            display: flex;
+            gap: 15px;
+        }
+
+        /* Floating Music Player */
+        .music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #fff;
+            padding: 10px 18px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 999;
+            border: 1px solid #f0f0f0;
+        }
+
+        .music-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========================================== -->
+    <!-- PART 2: STRUCTURE (HTML)                    -->
+    <!-- ========================================== -->
+
+    <!-- Top Navigation Role Switcher -->
+    <div class="top-nav">
+        <button class="role-btn active" id="btn-guest" onclick="switchRole('guest')">Guest</button>
+        <button class="role-btn" id="btn-admin" onclick="switchRole('admin')" style="margin-left: 10px;">Admin Mode</button>
+    </div>
+
+    <div class="container">
+
+        <!-- Admin Control Panel -->
+        <div class="admin-panel" id="adminPanel">
+            <h3 style="margin-bottom: 15px; color: var(--primary-color);"><i class="fa-solid fa-gear"></i> หลังบ้าน (Admin Panel)</h3>
+            <div class="form-group">
+                <label>ชื่อร้านค้า:</label>
+                <input type="text" id="inputStoreName" value="Cute Credit Store ✨">
+            </div>
+            <div class="form-group">
+                <label>รายละเอียด/คำโปรยร้าน:</label>
+                <textarea id="inputStoreDesc" rows="2">ขอบคุณลูกค้าทุกท่านที่ไว้วางใจอุดหนุนร้านเรานะคะ 💕</textarea>
+            </div>
+            <div class="form-group">
+                <label>ลิงก์รูปแบนเนอร์ (URL):</label>
+                <input type="text" id="inputBannerUrl" value="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80">
+            </div>
+            <div class="form-group">
+                <label>ลิงก์ Google Drive (เก็บหลักฐาน/เครดิต):</label>
+                <input type="text" id="inputDriveUrl" value="https://drive.google.com">
+            </div>
+            <div class="color-inputs">
+                <div class="form-group" style="flex:1;">
+                    <label>สีพื้นหลัง (#HEX):</label>
+                    <input type="text" id="inputBgColor" value="#fce4ec">
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>สีฟอนต์ข้อความ (#HEX):</label>
+                    <input type="text" id="inputTextColor" value="#4a4a4a">
+                </div>
+            </div>
+            <button class="form-submit-btn" onclick="saveAdminSettings()">บันทึกการตั้งค่า</button>
+        </div>
+
+        <!-- Store Profile Card -->
+        <div class="store-header">
+            <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80" alt="Store Banner" class="banner-img" id="displayBanner">
+            <h1 class="store-title" id="displayStoreName">Cute Credit Store ✨</h1>
+            <p class="store-desc" id="displayStoreDesc">ขอบคุณลูกค้าทุกท่านที่ไว้วางใจอุดหนุนร้านเรานะคะ 💕</p>
+            <a href="https://drive.google.com" target="_blank" class="drive-btn" id="displayDriveBtn">
+                <i class="fa-regular fa-folder-open"></i> ดูคลังหลักฐาน Google Drive
+            </a>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions-bar">
+            <h3>รีวิวทั้งหมด (<span id="reviewCount">0</span>)</h3>
+            <button class="btn-add-review" onclick="openReviewModal()"><i class="fa-solid fa-pen-nib"></i> เขียนรีวิว</button>
+        </div>
+
+        <!-- Review Grid -->
+        <div class="reviews-grid" id="reviewsContainer">
+            <!-- Dynamic Content -->
+        </div>
+
+    </div>
+
+    <!-- Review Modal -->
+    <div class="modal" id="reviewModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeReviewModal()">&times;</span>
+            <h3 style="margin-bottom: 15px;">✍️ เขียนรีวิวการซื้อขาย</h3>
+            <form id="reviewForm" onsubmit="submitReview(event)">
+                <div class="form-group">
+                    <label>ชื่อของคุณ / ชื่อผู้ซื้อ:</label>
+                    <input type="text" id="reviewerName" placeholder="เช่น น้องพาสเทล" required>
+                </div>
+                <div class="form-group">
+                    <label>ข้อความรีวิว:</label>
+                    <textarea id="reviewComment" rows="4" placeholder="บริการเป็นยังไงบ้างคะ..." required></textarea>
+                </div>
+                <button type="submit" class="form-submit-btn">ส่งรีวิว</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Floating Music Player -->
+    <div class="music-player">
+        <button class="music-btn" id="musicBtn" onclick="toggleMusic()">
+            <i class="fa-solid fa-music" id="musicIcon"></i>
+        </button>
+        <span style="font-size: 0.85rem; font-weight: 500;" id="musicStatus">เปิดเพลง</span>
+        <audio id="bgMusic" loop>
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PART 3: LOGIC & SYSTEM (JS)                 -->
+    <!-- ========================================== -->
+    <script>
+        // Default Mock Data
+        let reviews = [
+            { name: "Mochi", text: "แม่ค้าน่ารัก ตอบไวมาก ส่งของเร็วสุดๆ ค่ะ💖", date: "28/09/2026", color: "#ffb7b2" },
+            { name: "Pudding", text: "ได้รับของแล้วแพ็คมาดีมาก มีของแถมให้ด้วย แถมราคาน่ารักมากๆ", date: "29/09/2026", color: "#b5ead7" },
+            { name: "Aom", text: "เครดิตแน่น เครดิตดี โอนไว บริการประทับใจค่ะ ไว้มาอุดหนุนใหม่น้า", date: "29/09/2026", color: "#c7ceea" }
+        ];
+
+        const bgColors = ["#ffb7b2", "#ffdac1", "#e2f0cb", "#b5ead7", "#c7ceea", "#f3c4fb"];
+        let isPlaying = false;
+
+        // Init App
+        window.onload = function() {
+            renderReviews();
+        };
+
+        // Render Reviews
+        function renderReviews() {
+            const container = document.getElementById('reviewsContainer');
+            document.getElementById('reviewCount').innerText = reviews.length;
+            container.innerHTML = '';
+
+            reviews.forEach(review => {
+                const firstChar = review.name.charAt(0).toUpperCase();
+                const card = document.createElement('div');
+                card.className = 'review-card';
+                card.innerHTML = `
+                    <div class="review-header">
+                        <div class="avatar-initial" style="background-color: ${review.color};">${firstChar}</div>
+                        <div class="reviewer-info">
+                            <h4>${escapeHtml(review.name)}</h4>
+                            <div class="stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-text">${escapeHtml(review.text)}</div>
+                    <div class="review-date">${review.date}</div>
+                `;
+                container.prepend(card);
+            });
+        }
+
+        // Switch Role
+        function switchRole(role) {
+            const adminPanel = document.getElementById('adminPanel');
+            const btnGuest = document.getElementById('btn-guest');
+            const btnAdmin = document.getElementById('btn-admin');
+
+            if (role === 'admin') {
+                adminPanel.classList.add('active');
+                btnAdmin.classList.add('active');
+                btnGuest.classList.remove('active');
+            } else {
+                adminPanel.classList.remove('active');
+                btnGuest.classList.add('active');
+                btnAdmin.classList.remove('active');
+            }
+        }
+
+        // Admin Save Settings
+        function saveAdminSettings() {
+            const bgColor = document.getElementById('inputBgColor').value;
+            const textColor = document.getElementById('inputTextColor').value;
+            const storeName = document.getElementById('inputStoreName').value;
+            const storeDesc = document.getElementById('inputStoreDesc').value;
+            const bannerUrl = document.getElementById('inputBannerUrl').value;
+            const driveUrl = document.getElementById('inputDriveUrl').value;
+
+            // Apply Theme
+            document.documentElement.style.setProperty('--bg-color', bgColor);
+            document.documentElement.style.setProperty('--text-color', textColor);
+
+            // Apply Info
+            document.getElementById('displayStoreName').innerText = storeName;
+            document.getElementById('displayStoreDesc').innerText = storeDesc;
+            document.getElementById('displayBanner').src = bannerUrl;
+            document.getElementById('displayDriveBtn').href = driveUrl;
+
+            alert('บันทึกการตั้งค่าเรียบร้อยแล้วค่ะ 💕');
+        }
+
+        // Modal Controls
+        function openReviewModal() {
+            document.getElementById('reviewModal').style.display = 'flex';
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewModal').style.display = 'none';
+        }
+
+        // Add Review (Guest)
+        function submitReview(e) {
+            e.preventDefault();
+            const name = document.getElementById('reviewerName').value;
+            const text = document.getElementById('reviewComment').value;
+            const randomColor = bgColors[Math.floor(Math.random() * bgColors.length)];
+            const today = new Date().toLocaleDateString('th-TH');
+
+            reviews.push({
+                name: name,
+                text: text,
+                date: today,
+                color: randomColor
+            });
+
+            renderReviews();
+            closeReviewModal();
+            document.getElementById('reviewForm').reset();
+        }
+
+        // Music Player Toggle
+        function toggleMusic() {
+            const music = document.getElementById('bgMusic');
+            const musicBtn = document.getElementById('musicBtn');
+            const musicStatus = document.getElementById('musicStatus');
+            const musicIcon = document.getElementById('musicIcon');
+
+            if (isPlaying) {
+                music.pause();
+                musicIcon.className = 'fa-solid fa-music';
+                musicStatus.innerText = 'เปิดเพลง';
+            } else {
+                music.play().catch(() => alert('โปรดกดอนุญาตการเล่นเสียงบนเบราว์เซอร์'));
+                musicIcon.className = 'fa-solid fa-pause';
+                musicStatus.innerText = 'หยุดเพลง';
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // Utility: Helper for HTML escaping
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+    </script>
+</body>
+                      </html>
+                      
